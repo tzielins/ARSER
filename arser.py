@@ -70,13 +70,13 @@ class Arser:
             try:
                 mese = spec_ar(robjects.FloatVector(filter_y.tolist()), n_freq=num_freq_mese, plot=False, method=ar_method, order=set_order)
             except:
-                print 'spec_ar running error at line 70'
+                print('spec_ar running error at line 70')
                 sys.exit(1)
         else:
             try:
                 mese = spec_ar(robjects.FloatVector(self.dt_y.tolist()), n_freq=num_freq_mese, plot=False, method=ar_method, order=set_order)
             except:
-                print 'spec_ar running error at line 76'
+                print('spec_ar running error at line 76')
                 sys.exit(1)
  
         # search all the locial peaks of maximum entropy spectrum
@@ -118,7 +118,7 @@ class Arser:
             for p2 in ar_method:
                 
                 # choose best model's period from 'mle','yw','burg'
-                period = filter((lambda x:x>=T_start and x<=T_end), self.get_period(is_filter=p1, ar_method=p2))
+                period = list(filter((lambda x:x>=T_start and x<=T_end), self.get_period(is_filter=p1, ar_method=p2)))
                 if not period:
                     p2 = 'default'
                     period = [T_default]
@@ -158,11 +158,11 @@ if __name__ == '__main__':
     run_start = time.time()
     random.seed(run_start)
     if len(sys.argv)==1:
-        print 'version 2.0'
-        print 'Usage: python arser.py inputfile outputfile start(optional) end(optional) default_period(optional)'
-        print 'start: default 20'
-        print 'end: default 28'
-        print 'default_period: 24'
+        print('version 2.0')
+        print('Usage: python arser.py inputfile outputfile start(optional) end(optional) default_period(optional)')
+        print('start: default 20')
+        print('end: default 28')
+        print('default_period: 24')
         sys.exit(0)
     fin = open(sys.argv[1])
     tempfile = "temp" + str(random.random())
@@ -176,14 +176,14 @@ if __name__ == '__main__':
         T_default = float(sys.argv[5])
 
     # get time_points at header of input file
-    time_points = map(float, fin.readline().split()[1:])
-    print >> fou, 'probe\tfilter_type\tar_method\tperiod_number\tperiod\tamplitude\tphase\tmean\tR_square\tR2_adjust\tcoef_var\tpvalue'
+    time_points = list(map(float, fin.readline().split()[1:]))
+    print('probe\tfilter_type\tar_method\tperiod_number\tperiod\tamplitude\tphase\tmean\tR_square\tR2_adjust\tcoef_var\tpvalue', file=fou)
     
     # estimate each probe using general  harmonic regression
     pvalues = []
     for line in fin:
         probe  = line.split()
-        y_value = map(float, probe[1:])
+        y_value = list(map(float, probe[1:]))
         arser = Arser(time_points, y_value)
         d = arser.evaluate(start, end, T_default)    # search period in frequency domain range:[start,end]
         opt_line = [probe[0]]	# probe name column
@@ -198,7 +198,7 @@ if __name__ == '__main__':
         opt_line.append(d['R2adj']) # R2_adj column
         opt_line.append(d['coef_var'])	# coef_var column
         opt_line.append(d['pvalue'])	# pvalue column
-        print >> fou, '\t'.join(map(str, opt_line))
+        print('\t'.join(map(str, opt_line)), file=fou)
         pvalues.append(d['pvalue'])
     fin.close()
     fou.close()
@@ -209,7 +209,7 @@ if __name__ == '__main__':
     head = fin.readline().split()
     #head.insert(12,'qvalue')
     head.insert(12,'fdr_BH')
-    print >>fou, '\t'.join(head)
+    print('\t'.join(head), file=fou)
     #r.library('siggenes')
     #pi0 = r.pi0_est(pvalues)
     #if pi0['p0'] == 0:
@@ -220,6 +220,6 @@ if __name__ == '__main__':
         data = line.split()
         #data.insert(12,str(qvalues[i]))
         data.insert(12,str(qvalues_BH[i]))
-        print >>fou, '\t'.join(data)
+        print('\t'.join(data), file=fou)
     os.remove(tempfile)
-    print 'time used:', str(time.time()-run_start), 'seconds'
+    print('time used:', str(time.time()-run_start), 'seconds')

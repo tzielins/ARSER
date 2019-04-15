@@ -3,7 +3,7 @@ The file cantain filtering subroutine savit_golay, ols class, they were got from
 The two subroutines are called by class Arser
 Date: Thu Oct 15 10:21:49 CST 2009
 '''
-from __future__ import division
+
 import numpy
 from scipy import c_, ones, dot, stats, diff
 from scipy.linalg import inv, solve, det
@@ -26,7 +26,7 @@ def savitzky_golay(data, kernel = 11, order = 4):
     try:
             kernel = abs(int(kernel))
             order = abs(int(order))
-    except ValueError, msg:
+    except ValueError as msg:
         raise ValueError("kernel and order have to be of type int (floats will be converted).")
     if kernel % 2 != 1 or kernel < 1:
         raise TypeError("kernel size must be a positive odd number, was: %d" % kernel)
@@ -34,7 +34,7 @@ def savitzky_golay(data, kernel = 11, order = 4):
         raise TypeError("kernel is to small for the polynomals\nshould be > order + 2")
 
     # a second order polynomal has 3 coefficients
-    order_range = range(order+1)
+    order_range = list(range(order+1))
     half_window = (kernel -1) // 2
     b = numpy.mat([[k**i for i in order_range] for k in range(-half_window, half_window+1)])
     # since we don't want the derivative, else choose [1] or [2], respectively
@@ -43,8 +43,8 @@ def savitzky_golay(data, kernel = 11, order = 4):
     half_window = (window_size-1) // 2
 
     # precompute the offset values for better performance
-    offsets = range(-half_window, half_window+1)
-    offset_data = zip(offsets, m)
+    offsets = list(range(-half_window, half_window+1))
+    offset_data = list(zip(offsets, m))
 
     smooth_data = list()
 
@@ -203,29 +203,29 @@ class ols:
         omni, omnipv = self.omni()
 
         # printing output to screen
-        print '\n=============================================================================='
-        print "Dependent Variable: " + self.y_varnm
-        print "Method: Least Squares"
-        print "Date: ", time.strftime("%a, %d %b %Y",t)
-        print "Time: ", time.strftime("%H:%M:%S",t)
-        print '# obs:               %5.0f' % self.nobs
-        print '# variables:     %5.0f' % self.ncoef 
-        print '=============================================================================='
-        print 'variable     coefficient     std. Error      t-statistic     prob.'
-        print '=============================================================================='
+        print('\n==============================================================================')
+        print("Dependent Variable: " + self.y_varnm)
+        print("Method: Least Squares")
+        print("Date: ", time.strftime("%a, %d %b %Y",t))
+        print("Time: ", time.strftime("%H:%M:%S",t))
+        print('# obs:               %5.0f' % self.nobs)
+        print('# variables:     %5.0f' % self.ncoef) 
+        print('==============================================================================')
+        print('variable     coefficient     std. Error      t-statistic     prob.')
+        print('==============================================================================')
         for i in range(len(self.x_varnm)):
-            print '''% -5s          % -5.6f     % -5.6f     % -5.6f     % -5.6f''' % tuple([self.x_varnm[i],self.b[i],self.se[i],self.t[i],self.p[i]]) 
-        print '=============================================================================='
-        print 'Models stats                         Residual stats'
-        print '=============================================================================='
-        print 'R-squared            % -5.6f         Durbin-Watson stat  % -5.6f' % tuple([self.R2, self.dw()])
-        print 'Adjusted R-squared   % -5.6f         Omnibus stat        % -5.6f' % tuple([self.R2adj, omni])
-        print 'F-statistic          % -5.6f         Prob(Omnibus stat)  % -5.6f' % tuple([self.F, omnipv])
-        print 'Prob (F-statistic)   % -5.6f			JB stat             % -5.6f' % tuple([self.Fpv, JB])
-        print 'Log likelihood       % -5.6f			Prob(JB)            % -5.6f' % tuple([ll, JBpv])
-        print 'AIC criterion        % -5.6f         Skew                % -5.6f' % tuple([aic, skew])
-        print 'BIC criterion        % -5.6f         Kurtosis            % -5.6f' % tuple([bic, kurtosis])
-        print '=============================================================================='
+            print('''% -5s          % -5.6f     % -5.6f     % -5.6f     % -5.6f''' % tuple([self.x_varnm[i],self.b[i],self.se[i],self.t[i],self.p[i]])) 
+        print('==============================================================================')
+        print('Models stats                         Residual stats')
+        print('==============================================================================')
+        print('R-squared            % -5.6f         Durbin-Watson stat  % -5.6f' % tuple([self.R2, self.dw()]))
+        print('Adjusted R-squared   % -5.6f         Omnibus stat        % -5.6f' % tuple([self.R2adj, omni]))
+        print('F-statistic          % -5.6f         Prob(Omnibus stat)  % -5.6f' % tuple([self.F, omnipv]))
+        print('Prob (F-statistic)   % -5.6f			JB stat             % -5.6f' % tuple([self.Fpv, JB]))
+        print('Log likelihood       % -5.6f			Prob(JB)            % -5.6f' % tuple([ll, JBpv]))
+        print('AIC criterion        % -5.6f         Skew                % -5.6f' % tuple([aic, skew]))
+        print('BIC criterion        % -5.6f         Kurtosis            % -5.6f' % tuple([bic, kurtosis]))
+        print('==============================================================================')
 
 if __name__ == '__main__':
 
@@ -244,20 +244,20 @@ if __name__ == '__main__':
 	# if you have rpy installed, use it to test the results
 	have_rpy =  False
 	try:
-	    print "\n"
-	    print "="*30
-	    print "Validating OLS results in R"
-	    print "="*30
+	    print("\n")
+	    print("="*30)
+	    print("Validating OLS results in R")
+	    print("="*30)
 
 	    import rpy
 	    have_rpy = True
 	except ImportError:
-	    print "\n"
-	    print "="*30
-	    print "Validating OLS-class results in R"
-	    print "="*30
-	    print "rpy is not installed"
-	    print "="*30
+	    print("\n")
+	    print("="*30)
+	    print("Validating OLS-class results in R")
+	    print("="*30)
+	    print("rpy is not installed")
+	    print("="*30)
 
 	if have_rpy:
 	    y = data[:,0]
@@ -268,6 +268,6 @@ if __name__ == '__main__':
 	    rpy.set_default_mode(rpy.NO_CONVERSION)
 	    linear_model = rpy.r.lm(rpy.r("y ~ x1 + x2 + x3 + x4"), data = rpy.r.data_frame(x1=x1,x2=x2,x3=x3,x4=x4,y=y))
 	    rpy.set_default_mode(rpy.BASIC_CONVERSION)
-	    print linear_model.as_py()['coefficients']
+	    print(linear_model.as_py()['coefficients'])
 	    summary = rpy.r.summary(linear_model)
-	    print summary
+	    print(summary)

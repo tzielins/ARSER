@@ -79,4 +79,4 @@ if __name__ == '__main__':
     data = cosine_model_multiple()
     for name in data:
         value = '\t'.join(map(str,data[name]))
-        print >>fou, name+'\t'+value
+        print(name+'\t'+value, file=fou)
